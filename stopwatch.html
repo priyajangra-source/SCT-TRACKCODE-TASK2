@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stopwatch App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .stopwatch {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .time {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    .buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    .laps {
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .laps h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .lap-item {
+      padding: 5px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stopwatch">
+    <h1>⏱️ Stopwatch</h1>
+    <div class="time" id="display">00:00:00.000</div>
+    <div class="buttons">
+      <button onclick="start()">▶️ Start</button>
+      <button onclick="pause()">⏸️ Pause</button>
+      <button onclick="reset()">🔁 Reset</button>
+      <button onclick="recordLap()">🏁 Lap</button>
+    </div>
+    <div class="laps" id="laps">
+      <h3>Lap Times:</h3>
+    </div>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+    const display = document.getElementById("display");
+    const laps = document.getElementById("laps");
+
+    function timeToString(time) {
+      let diffInHrs = time / 3600000;
+      let hh = Math.floor(diffInHrs);
+
+      let diffInMin = (diffInHrs - hh) * 60;
+      let mm = Math.floor(diffInMin);
+
+      let diffInSec = (diffInMin - mm) * 60;
+      let ss = Math.floor(diffInSec);
+
+      let diffInMs = (diffInSec - ss) * 1000;
+      let ms = Math.floor(diffInMs);
+
+      let formatted =
+        `${String(hh).padStart(2, '0')}:` +
+        `${String(mm).padStart(2, '0')}:` +
+        `${String(ss).padStart(2, '0')}.` +
+        `${String(ms).padStart(3, '0')}`;
+
+      return formatted;
+    }
+
+    function print(txt) {
+      display.innerHTML = txt;
+    }
+
+    function start() {
+      if (!timerInterval) {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(() => {
+          elapsedTime = Date.now() - startTime;
+          print(timeToString(elapsedTime));
+        }, 10);
+      }
+    }
+
+    function pause() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function reset() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      print("00:00:00.000");
+      elapsedTime = 0;
+      laps.innerHTML = "<h3>Lap Times:</h3>";
+    }
+
+    function recordLap() {
+      if (elapsedTime === 0) return;
+      const lapTime = timeToString(elapsedTime);
+      const lapItem = document.createElement("div");
+      lapItem.className = "lap-item";
+      lapItem.textContent = `Lap ${laps.children.length}: ${lapTime}`;
+      laps.appendChild(lapItem);
+    }
+  </script>
+
+</body>
+</html>
